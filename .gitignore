@@ -1,0 +1,26 @@
+# Java
+target/
+*.class
+
+# IntelliJ
+.idea/
+
+# VS Code
+.vscode/
+
+# Node
+node_modules/
+
+# Build
+build/
+dist/
+
+# Logs
+*.log
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
