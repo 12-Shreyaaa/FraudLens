@@ -86,33 +86,33 @@ Automatically generates a dashboard containing:
 
 ---
 
-## Transaction Timeline
+## Alert Analytics
 
-![Transaction Timeline](screenshots/transaction-timeline.png)
-
----
-
-## Alert Breakdown
-
-![Alert Breakdown](screenshots/alert-breakdown.png)
+![Transaction Timeline](screenshots/analytics-charts.png)
 
 ---
 
-## Suspicious Accounts
+## Flagged Alerts
 
-![Suspicious Accounts](screenshots/suspicious-accounts.png)
-
----
-
-## Search, Filters & Export
-
-![Filters and Export](screenshots/filters-and-export.png)
+![Alert Breakdown](screenshots/alert-table.png)
 
 ---
 
 ## Alert Details Popup
 
 ![Alert Details](screenshots/alert-details-modal.png)
+
+---
+
+## Search, Filters & Export
+
+![Filters and Export](screenshots/alert-filtering.png)
+
+---
+
+## Complete Dashboard
+
+![Suspicious Accounts](screenshots/dashboard-full-view.png)
 
 ---
 
