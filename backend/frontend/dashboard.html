@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FraudLens Dashboard</title>
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e2229;--border:#2a2f3a;--text:#e8eaed;--muted:#9aa2af;
+        --accent:#5b8def;--red:#e5484d;--amber:#f5a524;--purple:#9b6bff;--green:#2fbf71;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);}
+  header{padding:28px 36px;border-bottom:1px solid var(--border);}
+  header h1{margin:0;font-size:22px;font-weight:600;}
+  header p{margin:6px 0 0;color:var(--muted);font-size:14px;}
+  .wrap{padding:28px 36px;max-width:1300px;margin:0 auto;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+  .card .label{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;}
+  .card .value{font-size:28px;font-weight:700;margin-top:6px;}
+  .card.high .value{color:var(--red);} .card.rapid .value{color:var(--amber);}
+  .card.spike .value{color:var(--purple);} .card.ring .value{color:var(--green);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr;}}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;}
+  .panel h3{margin:0 0 14px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;}
+  tr:hover td{background:var(--panel2);}
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600;}
+  .b-HIGH_VALUE{background:rgba(229,72,77,.18);color:var(--red);}
+  .b-RAPID{background:rgba(245,165,36,.18);color:var(--amber);}
+  .b-SPIKE{background:rgba(155,107,255,.18);color:var(--purple);}
+  .b-RING{background:rgba(47,191,113,.18);color:var(--green);}
+  .scrollbox{max-height:420px;overflow-y:auto;}
+  canvas{max-height:280px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>FraudLens</h1>
+  <p>Sliding window + graph cycle detection + anomaly detection — fraud analytics report</p>
+</header>
+<div class="wrap">
+  <div class="stats" id="statCards"></div>
+  <div class="grid2">
+    <div class="panel"><h3>Alert Breakdown</h3><canvas id="alertChart"></canvas></div>
+    <div class="panel"><h3>Top Suspicious Accounts</h3><canvas id="topUsersChart"></canvas></div>
+  </div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Top Suspicious Accounts (table)</h3>
+      <div class="scrollbox"><table><thead><tr><th>Account</th><th>Alert Count</th></tr></thead>
+      <tbody id="topUsersBody"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <h3>Flagged Alerts</h3>
+      <div class="scrollbox"><table><thead><tr><th>Type</th><th>Sender</th><th>Receiver</th><th>Amount</th></tr></thead>
+      <tbody id="alertsBody"></tbody></table></div>
+    </div>
+  </div>
+</div>
+<script>
+const data = {
+  "reportGeneratedAt": 1785562146331,
+  "totalTransactions": 575,
+  "totalAlerts": 13,
+  "fraudPercentage": 2.26,
+  "alertCounts": {
+    "HIGH_VALUE": 6,
+    "RAPID": 2,
+    "SPIKE": 1,
+    "RING": 4
+  },
+  "topSuspiciousAccounts": [
+    {"account": "Karl", "alertCount": 3},
+    {"account": "Quinn", "alertCount": 2},
+    {"account": "Wendy", "alertCount": 1},
+    {"account": "Vik", "alertCount": 1},
+    {"account": "Yash", "alertCount": 1},
+    {"account": "Frank", "alertCount": 1},
+    {"account": "Charlie", "alertCount": 1},
+    {"account": "Nina", "alertCount": 1},
+    {"account": "Priya", "alertCount": 1},
+    {"account": "Heidi", "alertCount": 1}
+  ],
+  "alerts": [
+    {"alertType": "RING", "sender": "Wendy", "receiver": "Oscar", "amount": 259.98, "timestamp": 1753052280991, "reason": "Fraud ring detected: Oscar -> Wendy"},
+    {"alertType": "RING", "sender": "Vik", "receiver": "Xavier", "amount": 2033.41, "timestamp": 1753071652615, "reason": "Fraud ring detected: Xavier -> Vik"},
+    {"alertType": "HIGH_VALUE", "sender": "Yash", "receiver": "Eve", "amount": 41038.11, "timestamp": 1753086910509, "reason": "High value transaction from Yash : 41038.11"},
+    {"alertType": "HIGH_VALUE", "sender": "Karl", "receiver": "Dave", "amount": 12293.74, "timestamp": 1753087053402, "reason": "High value transaction from Karl : 12293.74"},
+    {"alertType": "HIGH_VALUE", "sender": "Frank", "receiver": "Eve", "amount": 26447.88, "timestamp": 1753087143724, "reason": "High value transaction from Frank : 26447.88"},
+    {"alertType": "HIGH_VALUE", "sender": "Quinn", "receiver": "Rahul", "amount": 43667.46, "timestamp": 1753087266566, "reason": "High value transaction from Quinn : 43667.46"},
+    {"alertType": "HIGH_VALUE", "sender": "Charlie", "receiver": "Mona", "amount": 44747.05, "timestamp": 1753087307655, "reason": "High value transaction from Charlie : 44747.05"},
+    {"alertType": "HIGH_VALUE", "sender": "Nina", "receiver": "Alice", "amount": 29470.66, "timestamp": 1753087358066, "reason": "High value transaction from Nina : 29470.66"},
+    {"alertType": "RAPID", "sender": "Karl", "receiver": "Mona", "amount": 405.70, "timestamp": 1753089045439, "reason": "Karl made 6 transactions in 1 hour"},
+    {"alertType": "RAPID", "sender": "Karl", "receiver": "Dave", "amount": 404.97, "timestamp": 1753089233006, "reason": "Karl made 7 transactions in 1 hour"},
+    {"alertType": "SPIKE", "sender": "Priya", "receiver": "Zara", "amount": 4500.00, "timestamp": 1753090224288, "reason": "Unusual transaction amount from Priya : 4500.0 (avg 1069.47)"},
+    {"alertType": "RING", "sender": "Quinn", "receiver": "Nina", "amount": 2300.00, "timestamp": 1753090604288, "reason": "Fraud ring detected: Nina -> Oscar -> Quinn"},
+    {"alertType": "RING", "sender": "Heidi", "receiver": "Eve", "amount": 1650.00, "timestamp": 1753091119288, "reason": "Fraud ring detected: Eve -> Frank -> Grace -> Heidi"}
+  ]
+}
+;
+
+function initDashboard() {
+
+document.getElementById('statCards').innerHTML = `
+  <div class="card"><div class="label">Total Transactions</div><div class="value">${data.totalTransactions}</div></div>
+  <div class="card"><div class="label">Total Alerts</div><div class="value">${data.totalAlerts}</div></div>
+  <div class="card"><div class="label">Fraud Percentage</div><div class="value">${data.fraudPercentage}%</div></div>
+  <div class="card high"><div class="label">High Value</div><div class="value">${data.alertCounts.HIGH_VALUE}</div></div>
+  <div class="card rapid"><div class="label">Rapid-Fire</div><div class="value">${data.alertCounts.RAPID}</div></div>
+  <div class="card spike"><div class="label">Amount Spikes</div><div class="value">${data.alertCounts.SPIKE}</div></div>
+  <div class="card ring"><div class="label">Fraud Rings</div><div class="value">${data.alertCounts.RING}</div></div>
+`;
+
+if (typeof Chart !== 'undefined') {
+  Chart.defaults.color = '#9aa2af';
+  Chart.defaults.borderColor = '#2a2f3a';
+
+  new Chart(document.getElementById('alertChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['High Value', 'Rapid-Fire', 'Amount Spike', 'Fraud Ring'],
+      datasets: [{ data: [data.alertCounts.HIGH_VALUE, data.alertCounts.RAPID, data.alertCounts.SPIKE, data.alertCounts.RING],
+        backgroundColor: ['#e5484d', '#f5a524', '#9b6bff', '#2fbf71'], borderWidth: 0 }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+  });
+
+  new Chart(document.getElementById('topUsersChart'), {
+    type: 'bar',
+    data: {
+      labels: data.topSuspiciousAccounts.map(u => u.account),
+      datasets: [{ label: 'Alert Count', data: data.topSuspiciousAccounts.map(u => u.alertCount), backgroundColor: '#5b8def', borderRadius: 4 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+  });
+} else {
+  console.error('FraudLens: Chart.js could not be loaded from any source - charts skipped, tables still rendered.');
+}
+
+document.getElementById('topUsersBody').innerHTML = data.topSuspiciousAccounts.map(u =>
+  `<tr><td>${u.account}</td><td>${u.alertCount}</td></tr>`).join('');
+
+document.getElementById('alertsBody').innerHTML = data.alerts.map(a =>
+  `<tr><td><span class="badge b-${a.alertType}">${a.alertType.replace('_',' ')}</span></td><td>${a.sender}</td><td>${a.receiver}</td><td>${a.amount.toFixed(2)}</td></tr>`).join('');
+
+} // end initDashboard
+
+// Load Chart.js with fallback CDNs, so a single blocked/unreachable host
+// (common with file:// pages behind firewalls or ad-blockers) doesn't
+// leave the charts blank. initDashboard() only runs once a script
+// actually loads successfully, guaranteeing Chart is defined before use.
+(function loadChartJs() {
+  var sources = [
+    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js',
+    'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js',
+    'https://unpkg.com/chart.js@4.4.4/dist/chart.umd.min.js'
+  ];
+
+  function tryLoad(i) {
+    if (i >= sources.length) {
+      console.error('FraudLens: all Chart.js CDN sources failed to load.');
+      initDashboard(); // still populate stat cards + tables without charts
+      return;
+    }
+    var script = document.createElement('script');
+    script.src = sources[i];
+    script.onload = initDashboard;
+    script.onerror = function () { tryLoad(i + 1); };
+    document.head.appendChild(script);
+  }
+
+  tryLoad(0);
+})();
+</script>
+</body>
+</html>

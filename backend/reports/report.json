@@ -1,0 +1,39 @@
+{
+  "reportGeneratedAt": 1785562146331,
+  "totalTransactions": 575,
+  "totalAlerts": 13,
+  "fraudPercentage": 2.26,
+  "alertCounts": {
+    "HIGH_VALUE": 6,
+    "RAPID": 2,
+    "SPIKE": 1,
+    "RING": 4
+  },
+  "topSuspiciousAccounts": [
+    {"account": "Karl", "alertCount": 3},
+    {"account": "Quinn", "alertCount": 2},
+    {"account": "Wendy", "alertCount": 1},
+    {"account": "Vik", "alertCount": 1},
+    {"account": "Yash", "alertCount": 1},
+    {"account": "Frank", "alertCount": 1},
+    {"account": "Charlie", "alertCount": 1},
+    {"account": "Nina", "alertCount": 1},
+    {"account": "Priya", "alertCount": 1},
+    {"account": "Heidi", "alertCount": 1}
+  ],
+  "alerts": [
+    {"alertType": "RING", "sender": "Wendy", "receiver": "Oscar", "amount": 259.98, "timestamp": 1753052280991, "reason": "Fraud ring detected: Oscar -> Wendy"},
+    {"alertType": "RING", "sender": "Vik", "receiver": "Xavier", "amount": 2033.41, "timestamp": 1753071652615, "reason": "Fraud ring detected: Xavier -> Vik"},
+    {"alertType": "HIGH_VALUE", "sender": "Yash", "receiver": "Eve", "amount": 41038.11, "timestamp": 1753086910509, "reason": "High value transaction from Yash : 41038.11"},
+    {"alertType": "HIGH_VALUE", "sender": "Karl", "receiver": "Dave", "amount": 12293.74, "timestamp": 1753087053402, "reason": "High value transaction from Karl : 12293.74"},
+    {"alertType": "HIGH_VALUE", "sender": "Frank", "receiver": "Eve", "amount": 26447.88, "timestamp": 1753087143724, "reason": "High value transaction from Frank : 26447.88"},
+    {"alertType": "HIGH_VALUE", "sender": "Quinn", "receiver": "Rahul", "amount": 43667.46, "timestamp": 1753087266566, "reason": "High value transaction from Quinn : 43667.46"},
+    {"alertType": "HIGH_VALUE", "sender": "Charlie", "receiver": "Mona", "amount": 44747.05, "timestamp": 1753087307655, "reason": "High value transaction from Charlie : 44747.05"},
+    {"alertType": "HIGH_VALUE", "sender": "Nina", "receiver": "Alice", "amount": 29470.66, "timestamp": 1753087358066, "reason": "High value transaction from Nina : 29470.66"},
+    {"alertType": "RAPID", "sender": "Karl", "receiver": "Mona", "amount": 405.70, "timestamp": 1753089045439, "reason": "Karl made 6 transactions in 1 hour"},
+    {"alertType": "RAPID", "sender": "Karl", "receiver": "Dave", "amount": 404.97, "timestamp": 1753089233006, "reason": "Karl made 7 transactions in 1 hour"},
+    {"alertType": "SPIKE", "sender": "Priya", "receiver": "Zara", "amount": 4500.00, "timestamp": 1753090224288, "reason": "Unusual transaction amount from Priya : 4500.0 (avg 1069.47)"},
+    {"alertType": "RING", "sender": "Quinn", "receiver": "Nina", "amount": 2300.00, "timestamp": 1753090604288, "reason": "Fraud ring detected: Nina -> Oscar -> Quinn"},
+    {"alertType": "RING", "sender": "Heidi", "receiver": "Eve", "amount": 1650.00, "timestamp": 1753091119288, "reason": "Fraud ring detected: Eve -> Frank -> Grace -> Heidi"}
+  ]
+}
