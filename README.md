@@ -5,6 +5,9 @@
 FraudLens is a real-time inspired fraud analytics system that processes financial transactions, detects suspicious activities using multiple detection techniques, and generates an interactive dashboard for fraud investigation.
 
 ---
+## Live Demo
+
+🔗 https://fraudlens-12.netlify.app
 
 ## Features
 
